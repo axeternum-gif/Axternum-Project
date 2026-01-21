@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axternum Universum</title>
+    <style>
+        body { background: #0f0f0f; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
+        .card { background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid #333; }
+        .hp-bar { width: 100%; background: #333; height: 20px; border-radius: 10px; margin: 10px 0; overflow: hidden; }
+        .hp-fill { background: #ff4d4d; height: 100%; width: 100%; transition: 0.5s; }
+        button { background: #4d94ff; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; width: 100%; margin-top: 10px; cursor: pointer; }
+        input { width: 90%; padding: 10px; margin: 5px 0; border-radius: 5px; border: 1px solid #444; background: #222; color: white; }
+        #game-ui { display: none; }
+    </style>
+</head>
+<body>
+    <h1>🛡️ Axternum</h1>
+
+    <div id="login-ui" class="card">
+        <input type="text" id="user" placeholder="Nume Erou (ex: AXTERNUM)">
+        <input type="password" id="pass" placeholder="Parolă (ex: 1234)">
+        <button onclick="login()">Intră în Univers</button>
+        <p id="msg" style="color: #ff4d4d;"></p>
+    </div>
+
+    <div id="game-ui" class="card">
+        <h2 id="hero-name">Erou</h2>
+        <div class="hp-bar"><div id="hp-fill" class="hp-fill"></div></div>
+        <p>✨ Cioburi (Shards): <span id="shards-val">0</span></p>
+        <button onclick="alert('Misiune generată de AI...')">Misiune Nouă (AI)</button>
+    </div>
+
+    <script>
+        async function login() {
+            const u = document.getElementById('user').value;
+            const p = document.getElementById('pass').value;
+            // Apelăm motorul Python de pe Vercel
+            const res = await fetch(`/login?username=${u}&parola=${p}`);
+            const data = await res.json();
+            
+            if(data.success) {
+                document.getElementById('login-ui').style.display = 'none';
+                document.getElementById('game-ui').style.display = 'block';
+                document.getElementById('hero-name').innerText = data.player.username;
+                document.getElementById('shards-val').innerText = data.player.shards;
+                document.getElementById('hp-fill').style.width = data.player.hp + '%';
+            } else {
+                document.getElementById('msg').innerText = data.message;
+            }
+        }
+    </script>
+</body>
+</html>
